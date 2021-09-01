@@ -2,11 +2,18 @@
 include 'db_connection.php';
 session_start();
 
-if(isset($sessionId)){
-    include 'chatwee.php';
-}else {
 
-}
+require_once(dirname( __FILE__ ) . "/ChatweeV2_SDK/Chatwee.php");
+
+ChatweeV2_Configuration::setChatId('60f96c3ea471a961bf76e172');
+ChatweeV2_Configuration::setClientKey('52ee020bd6cfd7144749e201');
+
+try {
+    ChatweeV2_Session::setSessionId($_SESSION["chatweesessionid"]);
+    echo "The session ID has been set";
+  } catch(Exception $exception) {
+    echo "An error occured: " . $exception->getMessage();
+  }
 
 // echo $sessionId;
 // die;

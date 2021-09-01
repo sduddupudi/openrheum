@@ -1,5 +1,5 @@
 <?php
-$adminURL = 'https://staging.openrheum.com/admin/';
+$adminURL = 'https://staging2.openrheum.com/admin/';
 session_start();
 if(isset($_POST['logout_btn']))
 {

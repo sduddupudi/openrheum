@@ -78,8 +78,31 @@ if (isset($_POST['sign_in__button'])) {
 
     if (!empty($row)) {
         $_SESSION["userID"] = $row['userID'];
+        $chatwee_name = $row['first_name'] ."\t". $row['last_name'];
         $_SESSION["userName"] = $row['userName'];
         $_SESSION["userType"] = $row['userType'];
+
+// chatwee ** start ** // 
+            require_once(dirname( __FILE__ ) . "/ChatweeV2_SDK/Chatwee.php");
+            ChatweeV2_Configuration::setChatId('60f96c3ea471a961bf76e172');
+            ChatweeV2_Configuration::setClientKey('52ee020bd6cfd7144749e201');
+                $userId = ChatweeV2_SsoUser::register(Array(
+                "login" => "$chatwee_name",
+                "isAdmin" => false,
+                "avatar" => ""
+                ));
+
+                $sessionId = ChatweeV2_SsoUser::login(Array(
+                    "userId" => $userId,
+                   
+                  ));
+
+              $_SESSION["chatweesessionid"] = $sessionId;
+            
+             
+                // chatwee ** end ** //  
+
+
       // ======= new code =======//
         $sql_update = "UPDATE user SET `current_time_zone`='".$time_zone."' WHERE userID='" .$row['userID']."' ";
         if ($conn->query($sql_update) === TRUE) {

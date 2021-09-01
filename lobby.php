@@ -1,5 +1,7 @@
 <?php
 include 'header.php';
+
+
 // $crnt_time =  date("H:i:s");
 $lobby_sql = "SELECT * FROM lobby";
 $get_lobby = $conn->query($lobby_sql);
@@ -8,7 +10,15 @@ $row_lobby = $get_lobby->fetch_assoc();
 $info_icon_sql = "SELECT * FROM info_icon ";
 $get_info_icon = $conn->query($info_icon_sql);
 $row_info_icon = $get_info_icon->fetch_assoc();
+
+$name_sql = "SELECT * FROM `user` WHERE userID = '$_SESSION[userID]'";
+$get_name = $conn->query($name_sql);
+$row_name = $get_name->fetch_assoc();
+
+
 ?>
+
+
 
 <style>
 body {
@@ -328,7 +338,8 @@ body {
     </div>
 
     <div class="wlcome alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Hello user!</strong> Weclome <?php echo $_SESSION['userName'] ?> .
+        <strong>Hello <?php echo $row_name["first_name"] ."\t". $row_name["last_name"];?></strong> welcome to
+        Virtual Open Rheum 2021
         <button type="button" class="close btn" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>
         </button>
@@ -338,7 +349,7 @@ body {
 
     <?php include 'footer.php';   ?>
 
-<script type="text/javascript">
+    <script type="text/javascript">
     $('document').ready(function() {
         $.ajax({
             type: "POST",
@@ -348,29 +359,24 @@ body {
                 if (data.response == true) {
                     $("#GoTOLive").attr("href", data.link);
                     // console.log(data.link);
-                   
+
                 }
-            } 
+            }
         });
     })
-    
-     setInterval(function()
-    {
-      $.ajax({
-        type: "POST",
-        url: '<?php echo $siteURL; ?>/gotoliveAjax.php',
-        dataType: 'json',
-        success: function(data) {
-            if (data.response == true) {
-            $("#GoTOLive").attr("href", data.link);
-            // console.log(data.link);
 
+    setInterval(function() {
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $siteURL; ?>/gotoliveAjax.php',
+            dataType: 'json',
+            success: function(data) {
+                if (data.response == true) {
+                    $("#GoTOLive").attr("href", data.link);
+                    // console.log(data.link);
+
+                }
             }
-        }
-    });
+        });
     }, 10000); //time in milliseconds 
-
-
-
-
-  </script>
+    </script>
