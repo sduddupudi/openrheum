@@ -1,0 +1,352 @@
+<?php 
+include 'db_connection.php';
+session_start();
+
+if(!empty($_SESSION["userID"])){
+  echo "<script>window.location = '".$siteURL."lobby';</script>";  
+}
+
+function getRealIpAddr(){
+    if ( !empty($_SERVER['HTTP_CLIENT_IP']) ) {
+     // Check IP from internet.
+     $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
+     // Check IP is passed from proxy.
+     $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+     // Get IP address from remote address.
+     $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
+   }
+
+// IP LOCATION START
+$ips = getRealIpAddr();
+$apiKey = ""; // Replace API 
+$ip = $ips;
+$location = get_geolocation($apiKey, $ip);
+$decodedLocation = json_decode($location, true);
+
+// echo "<pre>";
+// print_r($decodedLocation);
+// echo "</pre>";
+
+$countryname = $decodedLocation["country_name"];
+$city =  $decodedLocation["city"];
+$state =  $decodedLocation["state_prov"];
+$ipadd =  $decodedLocation["ip"];
+$usrlocation ="$countryname / $state / $city / $ipadd ";
+
+// echo $usrlocation;
+
+function get_geolocation($apiKey, $ip, $lang = "en", $fields = "*", $excludes = "") {
+	$url = "https://api.ipgeolocation.io/ipgeo?apiKey=".$apiKey."&ip=".$ip."&lang=".$lang."&fields=".$fields."&excludes=".$excludes;
+	$cURL = curl_init();
+
+	curl_setopt($cURL, CURLOPT_URL, $url);
+	curl_setopt($cURL, CURLOPT_HTTPGET, true);
+	curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($cURL, CURLOPT_HTTPHEADER, array(
+		'Content-Type: application/json',
+		'Accept: application/json'
+	));
+	
+	return curl_exec($cURL);
+}
+
+// IP LOCATION END 
+
+
+if(isset($_POST['signup_button']))
+{
+    $signup_email = $_POST['signup_email'];
+    $signup_password = $_POST['signup_password'];
+    $signup_confirm_password = $_POST['signup_confirm_password']; 
+    
+    $get_sql = "SELECT userID FROM user where userName ='".$signup_email."' ";
+    $result = $conn->query($get_sql);
+    $row = $result->fetch_assoc();
+    
+    if(empty($row)){
+    
+    if($signup_password == $signup_confirm_password){
+    $sql = "INSERT INTO user (userName, Password, userType)
+    VALUES ('".$signup_email."', '".md5($signup_password)."', 'subscriber')";
+    
+    if ($conn->query($sql) === TRUE) {
+      echo "<script>window.location = '".$siteURL."thankyou.php';</script>";
+    } else {
+      $sign_up_error = "Error: Registration Failed!";
+    }
+    }else{
+      $sign_up_error = "Error: password And confirm password is not match";    
+    }
+    }else{
+      $sign_up_error = "Error: User Name already exist!";  
+    }
+    
+}
+
+if(isset($_POST['sign_in__button']))
+{
+    $sign_in_email = $_POST['sign_in_email'];
+    $sign_in_password = $_POST['sign_in_password'];
+    $encript_password = md5($sign_in_password);
+    $get_sql = "SELECT * FROM user where userName ='".$sign_in_email."' AND Password ='".$encript_password ."'  ";
+    $result = $conn->query($get_sql);
+    $row = $result->fetch_assoc();
+    $loginout="INSERT INTO `loginout`(`user_id`, `username`,`logout`) VALUES ('".$row['userID']."','".$row['userName']."','')";
+	$result_res = $conn->query($loginout);
+	$last_id = $conn->insert_id;
+	$_SESSION["logoutid"] = $last_id;
+
+    if(!empty($row)){
+
+/*	$get_userID = $row['userID'];
+    $result_user_token = $conn->query("SELECT * FROM user_token where userID ='".$get_userID."'  ");
+    $row_user_token = $result_user_token->fetch_assoc();
+    if (empty($row_user_token)) {
+    $token = uniqid();	
+	$sql = "INSERT INTO user_token (userID, token) VALUES ('".$get_userID."', '".$token."' )";
+
+    
+    if ($conn->query($sql) === TRUE) {*/
+
+        $_SESSION["userID"] = $row['userID'];
+        $_SESSION["userName"] = $row['userName'];
+        $_SESSION["userType"] = $row['userType'];
+        //$_SESSION["token"] = $token;
+        if($row['userType'] == "customer"){
+            echo "<script>window.location = '".$siteURL."admin';</script>";
+		}
+		else{
+            echo "<script>window.location = '".$siteURL."lobby';</script>";
+        }
+
+   /* }
+	}else{$sign_in_error = "Error: Another user login with same username!";}
+*/
+
+    }else{
+        $sign_in_error = "Error: Incorrect username and password Please try again!";
+    }
+    
+}
+
+
+?>
+
+<?php
+$site_sql = "SELECT site_logo,help_link,site_title FROM lobby  ";
+$get_site_logo = $conn->query($site_sql);
+$row_site_logo = $get_site_logo->fetch_assoc();
+
+$ips_sql = "SELECT * FROM index_page_settings";
+$get_ips = $conn->query($ips_sql);
+$row_ips = $get_ips->fetch_assoc();
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?php echo $row_site_logo['site_title']; ?></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/responsive.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+
+</head>
+
+<body>
+    <style>
+    /* .slick-track {
+    width: 1248px !important;
+} */
+    /* .slick-slide.slick-current.slick-active {
+    width: 1026px !important;
+}	  */
+    .termsandcond {
+        font-size: 11px;
+        padding-top: 0px;
+        text-align: justify;
+        text-justify: inter-word;
+    }
+
+    body {
+        overflow: hidden;
+    }
+    </style>
+
+    <div class="login">
+        <div class="login_left_content">
+            <div class="login_header">
+                <a href="<?php echo $siteURL;?>"><img src="<?php echo $row_site_logo['site_logo']; ?>"></a>
+            </div>
+            <div class="form_body">
+                <form class="login_form <?php if(empty($sign_up_error)){echo 'active';} ?> " action="" method="POST">
+                    <h1><?php if(isset($row_ips['sign_in_form_heading'])){echo $row_ips['sign_in_form_heading']; } ?>
+                    </h1>
+                    <span style="color: red;"><?php if(!empty($sign_in_error)){echo $sign_in_error;} ?></span>
+                    <span style="color: #4be84b;"><?php if(!empty($sign_up_sucess)){echo $sign_up_sucess;} ?></span>
+
+                    <div class="form-group">
+                        <label>Username</label>
+                        <div class="input_field">
+                            <span class="input-group-icon"><img src="assets/images/icone_mail.png"></span>
+                            <input required type="email" name="sign_in_email" placeholder="Enter your email"
+                                class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group mb_0">
+                        <label>Password</label>
+                        <div class="input_field">
+                            <span class="input-group-icon"><img src="assets/images/Icone_padlock.png"></span>
+                            <input required type="password" name="sign_in_password" placeholder="Enter your Password"
+                                class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group forgot_pass_link">
+                        <a href="forgot_password.php">Forgot Password ?</a>
+                    </div>
+
+                    <div class="termsandcond">
+                        <?php if($row_ips['privacy_policy_text_appears'] == 'yes'){
+				 	if(isset($row_ips['privacy_policy_text'])){echo $row_ips['privacy_policy_text']; }
+				 } ?>
+
+                        <?php if($row_ips['privacy_policy_checkbox_text_appears'] == 'yes'){ ?>
+                        <br><input type="checkbox" id="myCheck" name="test" required>
+                        <?php if(isset($row_ips['privacy_policy_checkbox_text'])){echo $row_ips['privacy_policy_checkbox_text']; } ?><br>
+
+                        <?php } ?>
+                    </div>
+
+
+                    <div class="form-group">
+                        <input type="submit" name="sign_in__button"
+                            value="<?php if(isset($row_ips['sign_in_button_text'])){echo $row_ips['sign_in_button_text']; } ?>"
+                            class="custom_btn form-control">
+                        <!--<a href="lobby.html" class="custom_btn form-control">Sign in</a>-->
+                        <?php if($row_ips['sign_up_appears'] == 'yes'){ ?>
+                        <div class="login_footer">
+                            <span class=""><a href="javascript:void(0)">I Don't have an account? Sign Up</a></span>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </form>
+
+
+                <form class="signup_form <?php if(!empty($sign_up_error)){echo 'active';} ?>" action="" method="POST">
+                    <h1><?php if(isset($row_ips['sign_up_form_heading'])){echo $row_ips['sign_up_form_heading']; } ?>
+                    </h1>
+                    <span style="color: red;"><?php if(!empty($sign_up_error)){echo $sign_up_error;} ?></span>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <div class="input_field">
+                            <span class="input-group-icon"><img src="assets/images/icone_mail.png"></span>
+                            <input type="email" name="signup_email" placeholder="Enter your email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password <i class="fa fa-info-circle"
+                                title="password Must contain at least one number and one uppercase and lowercase letter, and at least 8"
+                                aria-hidden="true"></i></label>
+                        <div class="input_field">
+                            <span class="input-group-icon"><img src="assets/images/Icone_padlock.png"></span>
+                            <input type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" name="signup_password"
+                                placeholder="Enter your Password" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group mb_0">
+                        <label>Re-Enter Password</label>
+                        <div class="input_field">
+                            <span class="input-group-icon"><img src="assets/images/Icone_padlock.png"></span>
+                            <input type="password" name="signup_confirm_password" placeholder="Confirm your Password"
+                                class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" name="signup_button"
+                            value="<?php if(isset($row_ips['sign_up_button_text'])){echo $row_ips['sign_up_button_text']; } ?>"
+                            class="custom_btn form-control">
+                        <!--<a href="lobby.html" class="custom_btn form-control">Sign Up</a>-->
+                        <?php if($row_ips['sign_up_appears'] == 'yes'){ ?>
+                        <div class="signup_footer">
+                            <span class=""><a href="javascript:void(0)">I have an account? Sign In</a></span>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+
+        <div class="login_slider">
+            <div>
+                <img src="<?php echo $row_ips["index_page_image"];?>">
+            </div>
+            <!-- <div>
+			<img src="assets/images/Slideshow_image_2.jpg">
+		</div> -->
+        </div>
+
+        <!-- <div class="chat_box_icon">
+		<img src="assets/images/icone_chatbot.png">
+	</div> -->
+
+        <div class="icon-help">
+            <a href="<?php if(isset($row_site_logo['help_link'])){echo $row_site_logo['help_link']; } ?>"
+                target="_blank"><img src="assets/images/icone_chatbot.png"></a>
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js">
+    </script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        $('.login_slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 1000,
+            autoplay: true,
+            autoplaySpeed: 5000,
+            arrows: true
+        });
+
+        $(".login_footer span a").click(function() {
+            $(".form_body .login_form").removeClass("active");
+            $(".form_body .signup_form").addClass("active");
+            $(".login_footer").hide();
+            $(".signup_footer").show();
+        });
+
+        $(".signup_footer span a").click(function() {
+            $(".form_body .signup_form").removeClass("active");
+            $(".form_body .login_form").addClass("active");
+            $(".login_footer").show();
+            $(".signup_footer").hide();
+        });
+    });
+    </script>
+
+</body>
+
+</html>

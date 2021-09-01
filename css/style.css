@@ -1,0 +1,198 @@
+
+.login-form {
+    position: fixed;
+    max-width: 21vw;
+  }
+  
+@font-face {
+    font-family: "NeueHaasUnicaPro-Bold";
+    src: url('../font/NeueHaasUnicaPro-Bold.otf')
+    format('truetype');
+    font-display: swap;
+    font-style: normal;
+}
+@font-face {
+    font-family: "NeueHaasUnicaPro-Regular";
+    src: url('../font/NeueHaasUnicaPro-Regular.otf')
+    format('truetype');
+    font-display: swap;
+    font-style: normal;
+}
+@font-face {
+    font-family: "NeueHaasUnicaPro-Light";
+    src: url('../font/NeueHaasUnicaPro-Light.otf')
+    format('truetype');
+    font-display: swap;
+    font-style: normal;
+}
+.event p {
+	font-family: "NeueHaasUnicaPro-Light";
+	color: #223669;
+	font-size: 18px;
+	line-height: 28px;
+}
+br {
+    margin-bottom: 10px;
+}
+.logo img {
+    width: 100%;
+}
+.map-footer img {
+    width: 100%;
+}
+.event-agenda .download-calendar img {
+    width: 100%;
+}
+.event-agenda {
+    text-align: center;
+    margin-top: 70px;
+}
+.days {
+    width: 150px;
+    margin-bottom: 20px;
+}
+.button_s {
+    background: #E11F83;
+    color: #fff !important;
+    padding: 12px 20px;
+    display: inline-block;
+    font-size: 30px;
+    border-radius: 0 10px 10px 0;
+    margin: 20px 0;
+    text-decoration: none !important;
+	font-family: "NeueHaasUnicaPro-Bold";
+}
+.register img {
+    width: 100%;
+}
+.middle-sec {
+    width: 100%;
+    padding: 0 10%;
+}
+
+.event h2 {
+    color: #9B3E90;
+    text-align: center;
+    font-size: 36px;
+	font-family: "NeueHaasUnicaPro-Bold";
+}
+.event .date {
+    background: #223669;
+    color: #fff !important;
+    padding: 15px 100px;
+    display: inline-block;
+    font-size: 30px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-decoration: none !important;
+    font-family: "NeueHaasUnicaPro-Bold";
+}
+.date-sec {
+    text-align: center;
+}
+.event h4 {
+    text-align: center;
+    color: #223669;
+    font-family: "NeueHaasUnicaPro-Bold";
+	font-size: 15px;
+}
+.map-footer {
+    margin-top: 70px;
+}
+.map-footer p {
+    font-family: "NeueHaasUnicaPro-Regular";
+    font-size: 18px;
+    color: #223669;
+    font-size: 17.5px;
+}
+.profile img {
+    width: 100%;
+}
+.sign {
+    width: 100%;
+}
+.profile-info h4 {
+    text-align: left;
+    font-size: 16px;
+}
+.profile-info h5 {
+    color: #E11F83;
+	 font-family: "NeueHaasUnicaPro-Regular";
+}
+
+.profile-info p {
+    font-size: 16px;
+    line-height: 20px;
+    font-family: "NeueHaasUnicaPro-Regular";
+}
+.login-form img {
+    width: 100px;
+}
+.login-form input {
+    padding: 10px 5px 10px 30px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+}
+.input-container i {
+    position: absolute;
+    left: 10px;
+    z-index: 999;
+    top: 39px;
+	color: #ccc;
+}
+.input-container {
+    position: relative;
+}
+.btn_s {
+    background: #9B3E90;
+    width: 100%;
+    border: none;
+    color: #fff;
+    padding: 10px 0;
+	margin-top: 20px;
+}
+.login-form h2 {
+    color: #9B3E90;
+    margin-bottom: 20px;
+}
+.forgot-password {
+    display: block;
+    text-align: right;
+    margin-bottom: 20px;
+    color: #000;
+}
+body {
+	 font-family: "NeueHaasUnicaPro-Regular" !important;
+}
+.login-form p {
+    text-align: justify;
+    font-size: 1.2rem;
+}
+input[type="checkbox"] {
+    width: 20px;
+
+}
+
+@media screen and (max-width: 991px) {
+.button_s {
+    font-size: 18px;
+}
+.event .date {
+    padding: 15px 20px;
+    font-size: 18px;
+}
+.event h2 {
+    font-size: 24px;
+}
+}
+
+@media screen and (min-width: 1200px) {
+.container {
+    /* width: 1370px !important; */
+    width: 95% !important;
+}
+.profile-info .col-md-7 {
+    padding: 0px;
+}
+}
