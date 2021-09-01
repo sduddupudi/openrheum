@@ -29,7 +29,7 @@ $get_row3 = $conn->query($sql);
 
 while ($new = mysqli_fetch_assoc($get_row3)) {
 
- if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new)  || strtotime($crnt_time_new) >= strtotime($new["schedule_end_time"])) {
+ if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new) && strtotime($crnt_time_new) >= strtotime($new["schedule_end_time"])) {
 
  	// if($y<=$x || $z > $x){
 

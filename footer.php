@@ -1,6 +1,7 @@
 <?php
 include 'timezone.php';
 $cid = $_SESSION["userID"];
+$user_type = $_SESSION["userType"];
 $ydas = $_SESSION["offset"];
 $time_zone_new = $_SESSION["time_zone"];
 $timeZone = new TimeZone();
@@ -19,6 +20,10 @@ $row_site_logo = $get_site_logo->fetch_assoc();
 $setting_menu_sql = "SELECT * FROM settings";
 $get_menu_setting = $conn->query($setting_menu_sql);
 $row_menu_setting = $get_menu_setting->fetch_assoc();
+
+$user_sql = "SELECT WorkshopRotationday1_1,WorkshopRotationday1_2 FROM user where userId='".$cid."' AND UserType='subscriber'";
+$get_user_sql = $conn->query($user_sql);
+$row_user = $get_user_sql->fetch_assoc();
 ?>
 
 
@@ -348,8 +353,8 @@ div.filter_box {
                             <img class="mob_icon_active_img d-none" src="assets/images/icone-map.png">
                             <?php } ?>
                             <span class="mob_txt_hide"><?php if (isset($row_menu_setting['plan_menu_text'])) {
-echo $row_menu_setting['plan_menu_text'];
-} ?>
+                    echo $row_menu_setting['plan_menu_text'];
+                } ?>
                             </span>
 
                         </a>
@@ -363,8 +368,8 @@ if ($row_menu_setting['program_menu'] == 'yes') { ?>
                             <img class="mob_icon_active_img d-none" src="assets/images/agenda_icon_active.png">
                             <?php } ?>
                             <span class="mob_txt_hide"><?php if (isset($row_menu_setting['program_menu_text'])) {
-echo $row_menu_setting['program_menu_text'];
-} ?>
+                    echo $row_menu_setting['program_menu_text'];
+                } ?>
                             </span>
                         </a>
                     </li>
@@ -426,7 +431,7 @@ echo $row_menu_setting['program_menu_text'];
 
                     <li class="d-none d-md-block">
                         <a href="javascript:void(0)" data-id="Form_Evaluation">
-                            <span class="mob_txt_hide">Evaluation Form(0)</span>
+                            <span class="mob_txt_hide">Form Evaluation(0)</span>
                         </a>
                     </li>
 
@@ -440,8 +445,8 @@ echo $row_menu_setting['program_menu_text'];
                             <img class="mob_icon_active_img d-none" src="assets/images/speakers_icon_active.png">
                             <?php } ?>
                             <span class="mob_txt_hide"><?php if (isset($row_menu_setting['speaker_menu_text'])) {
-echo $row_menu_setting['speaker_menu_text'];
-} ?>
+                    echo $row_menu_setting['speaker_menu_text'];
+                } ?>
                             </span>
 
                         </a>
@@ -456,8 +461,8 @@ if ($row_menu_setting['resource_menu'] == 'yes') { ?>
                             <img class="mob_icon_active_img d-none" src="assets/images/ressources_icon_active.png">
                             <?php } ?>
                             <span class="mob_txt_hide"><?php if (isset($row_menu_setting['resource_menu_text'])) {
-echo $row_menu_setting['resource_menu_text'];
-} ?>
+                    echo $row_menu_setting['resource_menu_text'];
+                } ?>
                             </span>
                         </a>
                     </li>
@@ -605,8 +610,8 @@ $get_row3 = $conn->query($sql);
                                             <h5 class="day_heading text-center mb-3">
                                                 <?php echo $cat_row['agenda_cat_name'] ?></h5>
                                             <?php
-while ($new = mysqli_fetch_assoc($get_row3)) {
-if($new["type"] == 'break') {  ?>
+    while ($new = mysqli_fetch_assoc($get_row3)) {
+        if($new["type"] == 'break') {  ?>
                                             <div class="break_box mb-3">
                                                 <hr>
                                                 <div class="break_text_box">
@@ -636,39 +641,50 @@ if($new["type"] == 'break') {  ?>
                                                     style="border: 1px solid <?php echo $new["schedule_date_color"]; ?>">
                                                     <div class="live_btn">
                                                         <h6 class="metting_title mb-0">
-                                                            <?php echo $new["agenda_name"]; ?>
+                                                    <?php
+                                                    if(($new["agenda_name"]=="Workshop Rotation 1" || $new["agenda_name"]=="Workshop Rotation 2") && $user_type == 'subscriber')
+                                                    {   
+                                                        if($new["agenda_name"]=="Workshop Rotation 1")
+                                                        echo $row_user['WorkshopRotationday1_1']; 
+                                                        else
+                                                        echo $row_user['WorkshopRotationday1_2'];
+                                                     }
+                                                     else{
+                                                        echo $new["agenda_name"] ;
+                                                     }
+                                                     ?>
                                                         </h6>
 
                                                     </div>
                                                     <div class="btn_box">
                                                         <div class="row">
                                                             <div class="col-md-2">
-                                                                <?php if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new)  || strtotime($crnt_time_new) >= strtotime($new["schedule_end_time"])) {
-                                         echo '<img class="img_gif" src = "' . $img_gif . '">';
-                                         } 
-                                        ?>
+        <?php if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new)  && strtotime($crnt_time_new) <= strtotime($new["schedule_end_time"])) {
+            echo '<img class="img_gif" src = "' . $img_gif . '">';
+        } 
+        ?>
                                                             </div>
                                                             <div class="col-md-10 alighn">
 
                                                                 <?php if ($new["link_title"] != '') { ?>
                                                                 <!-- <a href="<?php echo $new["link_url"] ?> "
-class="btn customMeeting_btn btn-sm"
-style="
-background-color:<?php echo $new["schedule_date_color"]; ?>"><?php echo $new["link_title"]; ?></a> -->
+                class="btn customMeeting_btn btn-sm"
+                style="
+                background-color:<?php echo $new["schedule_date_color"]; ?>"><?php echo $new["link_title"]; ?></a> -->
                                                                 <a href="<?php echo $new["link_url"] ?> "
                                                                     class="btn customMeeting_btn btn-sm" style="
-background-color:<?php echo $new["schedule_date_color"]; ?>"><?php echo $new["link_title"]; ?></a>
+                background-color:<?php echo $new["schedule_date_color"]; ?>"><?php echo $new["link_title"]; ?></a>
                                                                 <?php  } else { ?>
-                                                                <?php if ($new["watch_vide"] != '') { ?>
+                                                                <?php if ($new["link_url"] != '') { ?>
                                                                 <a href="#"
                                                                     class="btn customMeeting_btn btn-sm js-modal-btn"
-                                                                    data-video-id="<?php echo $new["watch_vide"] ?>"
+                                                                    data-video-id="<?php echo $new["link_url"] ?>"
                                                                     style="
-background-color:<?php echo $new["schedule_date_color"]; ?>">Watch Teaser</a>
+                background-color:<?php echo $new["schedule_date_color"]; ?>">Watch Teaser</a>
                                                                 <?php } ?>
                                                                 <a href="<?php echo $new["link_url"] ?>"
                                                                     class="btn customMeeting_btn btn-sm" style="
-background-color:<?php echo $new["schedule_date_color"]; ?>">Go To Meeting</a>
+                background-color:<?php echo $new["schedule_date_color"]; ?>">Go To Meeting</a>
 
                                                                 <?php } ?>
 
@@ -679,7 +695,7 @@ background-color:<?php echo $new["schedule_date_color"]; ?>">Go To Meeting</a>
                                             </div>
 
                                             <?php }
-} ?>
+    } ?>
 
                                         </div>
 
@@ -829,9 +845,9 @@ $pagLink = "";
 
                             <?php for ($i = 1; $i <= $total_pages; $i++) {
 if ($i == $page) {
-$pagLink .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
+    $pagLink .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
 } else {
-$pagLink .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getSpeakerPagination(" . $i . ");' >  " . $i . " </a></li>";
+    $pagLink .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getSpeakerPagination(" . $i . ");' >  " . $i . " </a></li>";
 }
 };
 echo $pagLink; ?>
@@ -963,9 +979,9 @@ $pagLink_r = "";
 
                             <?php for ($i = 1; $i <= $total_pages_r; $i++) {
 if ($i == $page_r) {
-$pagLink_r .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
+    $pagLink_r .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
 } else {
-$pagLink_r .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getResourcePagination(" . $i . ");' >  " . $i . " </a></li>";
+    $pagLink_r .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getResourcePagination(" . $i . ");' >  " . $i . " </a></li>";
 }
 };
 echo $pagLink_r; ?>
@@ -1073,9 +1089,9 @@ $pagLink_m = "";
 
                             <?php for ($i = 1; $i <= $total_pages_m; $i++) {
 if ($i == $page_m) {
-$pagLink_m .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
+    $pagLink_m .= "<li class='page-item active'><a class = 'page-link' href='javascript:void(0)'>" . $i . " </a></li>";
 } else {
-$pagLink_m .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getMeetingPagination(" . $i . ");' >  " . $i . " </a></li>";
+    $pagLink_m .= "<li class='page-item'><a class = 'page-link' href='javascript:void(0)'  onclick='getMeetingPagination(" . $i . ");' >  " . $i . " </a></li>";
 }
 };
 echo $pagLink_m; ?>
@@ -1188,7 +1204,7 @@ echo '<div class="speaker_inner col-lg-4 col-md-4">';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://chatwee-api.com/v2/script/60f96c3ea471a961bf76e172.js"></script>
-0<script type="text/javascript">
+<script type="text/javascript">
 $(".js-modal-btn").modalVideo({
     channel: 'vimeo'
 });
