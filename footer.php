@@ -641,7 +641,7 @@ $get_row3 = $conn->query($sql);
                                                     style="border: 1px solid <?php echo $new["schedule_date_color"]; ?>">
                                                     <div class="live_btn">
                                                         <h6 class="metting_title mb-0">
-                                                    <?php
+                                                            <?php
                                                     if(($new["agenda_name"]=="Workshop Rotation 1" || $new["agenda_name"]=="Workshop Rotation 2") && $user_type == 'subscriber')
                                                     {   
                                                         if($new["agenda_name"]=="Workshop Rotation 1")
@@ -659,7 +659,7 @@ $get_row3 = $conn->query($sql);
                                                     <div class="btn_box">
                                                         <div class="row">
                                                             <div class="col-md-2">
-        <?php if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new)  && strtotime($crnt_time_new) <= strtotime($new["schedule_end_time"])) {
+                                                                <?php if (strtotime($new["schedule_start_time"]) <= strtotime($crnt_time_new)  && strtotime($crnt_time_new) <= strtotime($new["schedule_end_time"])) {
             echo '<img class="img_gif" src = "' . $img_gif . '">';
         } 
         ?>
@@ -675,14 +675,14 @@ $get_row3 = $conn->query($sql);
                                                                     class="btn customMeeting_btn btn-sm" style="
                 background-color:<?php echo $new["schedule_date_color"]; ?>"><?php echo $new["link_title"]; ?></a>
                                                                 <?php  } else { ?>
-                                                                <?php if ($new["link_url"] != '') { ?>
+                                                                <?php if ($new["watch_vide"] != '') { ?>
                                                                 <a href="#"
                                                                     class="btn customMeeting_btn btn-sm js-modal-btn"
-                                                                    data-video-id="<?php echo $new["link_url"] ?>"
+                                                                    data-video-id="<?php echo $new["watch_vide"] ?>"
                                                                     style="
                 background-color:<?php echo $new["schedule_date_color"]; ?>">Watch Teaser</a>
                                                                 <?php } ?>
-                                                                <a href="<?php echo $new["link_url"] ?>"
+                                                                <a href="<?php echo $new["watch_vide"] ?>"
                                                                     class="btn customMeeting_btn btn-sm" style="
                 background-color:<?php echo $new["schedule_date_color"]; ?>">Go To Meeting</a>
 
